@@ -1,6 +1,20 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+## Notice
+When you clone this repository, you'll need to set up your environment variables to successfully connect to the psql databases locally.
+
+
+### Steps:
+<li> 
+Create environment file ".env.<b>environment_name</b>" in the root directory.
+</li>
+<li> 
+Define environment variables within file:   "PGDATABASE=<b>your_data_base</b>"
+</li>
+<ol>
+| replace all of the <b>bold</b> with relevant information |
+</ol>
+
 
 
 

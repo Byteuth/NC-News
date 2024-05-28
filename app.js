@@ -1,21 +1,25 @@
 const express = require('express') 
 const app = express()
+
+const {error_handler} = require('./error_handlers/api_error_handlers')
+
+const {
+  getAPI
+} = require('./controllers/api.controllers ')
 const {
   getTopics
 } = require('./controllers/topics.controllers')
 
 
-app.use(express.json())
 
+app.get('/api', getAPI)
 app.get('/api/topics', getTopics)
 
 
 
 
-app.use((err, req, res, next) => {
-  console.log(err);
-  res.status(404).send({err: '404 not found'});
-});
+
+app.use(error_handler);
 
 
 

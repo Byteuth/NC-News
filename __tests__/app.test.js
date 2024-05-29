@@ -161,6 +161,45 @@ describe("/api/articles/:article_id/comments", () => {
             expect(response.body.msg).toBe("Bad Request");
         });
     });
+
+    test("POST:200 returns postedComment object, checks for properties ", () => {
+        const controlComment = {
+            username: "icellusedkars",
+            body: 'This is a great aritcle name'
+            }
+
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(controlComment)
+        .expect(200)
+        .then((response ) => {
+            const comment = response.body.postedComment
+
+            expect(comment.body).toBe(controlComment.body)
+            expect(comment.author).toBe(controlComment.username)
+
+            expect(comment.hasOwnProperty('comment_id')).toBe(true)
+            expect(comment.hasOwnProperty('article_id')).toBe(true)
+            expect(comment.hasOwnProperty('votes')).toBe(true)
+            expect(comment.hasOwnProperty('created_at')).toBe(true)
+
+        });
+    });
+
+    test("POST:422 sends an appropriate status and error message when given a valid but non-existent id", () => {
+        const controlComment = {
+            username: "francisco",
+            body: 'This is a great aritcle name'
+            }
+
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(controlComment)
+        .expect(422)
+        .then((response ) => {
+            expect(response.body.msg).toBe('Invalid Username')
+        });
+    });
     
     
 });

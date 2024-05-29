@@ -43,8 +43,7 @@ exports.selectArticles = () => {
     
 }
 
-exports.selectCommentsById = (article_id) => {
-    
+exports.selectCommentsById = (article_id) => { 
     return db.query(
         `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id
         FROM comments
@@ -60,4 +59,22 @@ exports.selectCommentsById = (article_id) => {
         return commentsList
 
     })
+}
+
+exports.insertComment = (articleId, comment) => {
+    const commentMsg = comment.body
+    const username = comment.username
+
+    return db.query(
+        `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`,
+        [commentMsg, username, articleId]
+    )
+    .then(result => {
+        const insertedComment = result.rows[0]
+            if (!insertedComment) {
+                return reject404()
+            }
+            return insertedComment
+    })
+
 }

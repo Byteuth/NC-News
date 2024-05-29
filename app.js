@@ -12,16 +12,21 @@ const {
 const {
   getArticles,
   getArticlesById,
-  getCommentsByArticleId
+  getCommentsByArticleId,
+  addCommentToArticleId
 } = require ('./controllers/articles.controllers')
 
+app.use(express.json());
 
 
 app.get('/api', getAPI)
+
 app.get('/api/topics', getTopics)
+
 app.get('/api/articles', getArticles)
 app.get('/api/articles/:article_id', getArticlesById)
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
+app.post('/api/articles/:article_id/comments', addCommentToArticleId)
 
 
 

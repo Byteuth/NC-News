@@ -1,10 +1,16 @@
+const db = require("../db/connection");
+const seed = require("../db/seeds/seed");
+const data = require("../db/data/test-data/index");
 
 const {
     selectArticles,
-    selectCommentsById
+    selectCommentsById,
+    insertComment
 } = require("../models/article.models")
 
 
+beforeEach(() => seed(data));
+afterAll(() => db.end());
 
 
 describe("selectArticles", () => {
@@ -49,5 +55,36 @@ describe("selectCommentsById", () => {
     })
 
 })
+
+describe("insertComment", () => {
+    test('tests selectCommentsById for correct properties, tests to see if comments db increase with each post ', async () => {
+        const articleId = 1
+        const comment = 
+        {
+            username: "icellusedkars",
+            body: 'This is a great aritcle name'
+        }
+        
+        await insertComment(articleId, comment)
+        .then((result) => {
+            expect(result).toBeObject()
+
+            expect(result.comment_id).toBe(19)
+            expect(result.hasOwnProperty('comment_id')).toBe(true)
+            expect(result.hasOwnProperty('votes')).toBe(true)
+            expect(result.hasOwnProperty('created_at')).toBe(true)
+            expect(result.hasOwnProperty('author')).toBe(true)
+            expect(result.hasOwnProperty('body')).toBe(true)
+            expect(result.hasOwnProperty('created_at')).toBe(true)
+        })
+
+        await insertComment(articleId, comment)
+        .then((result) => {
+            expect(result.comment_id).toBe(20);
+        })
+    })
+
+})
+
 
 

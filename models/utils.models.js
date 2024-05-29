@@ -10,3 +10,8 @@ exports.convertDateTotimestamp = (article) => {
     return fixedArticle
 }
 
+
+exports.selectCommentsById = (article_id) => {
+
+    return article_id
+}

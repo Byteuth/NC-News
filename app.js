@@ -10,6 +10,7 @@ const {
   getTopics
 } = require('./controllers/topics.controllers')
 const {
+  getArticles,
   getArticlesById
 } = require ('./controllers/articles.controllers')
 
@@ -17,6 +18,7 @@ const {
 
 app.get('/api', getAPI)
 app.get('/api/topics', getTopics)
+app.get('/api/articles', getArticles)
 app.get('/api/articles/:article_id', getArticlesById)
 
 

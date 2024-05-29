@@ -1,5 +1,3 @@
-const app = require("../app");
-const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
@@ -16,6 +14,7 @@ const {
 
 const {
     selectArticles,
+    selectCommentsById
 } = require("../models/article.models")
 
 
@@ -124,4 +123,49 @@ describe("selectArticles", () => {
             })
         });
     });
+
+
+describe("selectCommentsById", () => {
+    test('tests selectCommentsById length and properties ', async () => {
+        const articalId = 1
+        await selectCommentsById(articalId)
+        .then((result) => {
+            const commentsList = result
+            const controlCommentsQuant = 2
+            
+            commentsList.forEach((comment) => {
+                expect(comment).toBeObject();
+                expect(comment.hasOwnProperty('comment_id')).toBe(true)
+                expect(comment.hasOwnProperty('votes')).toBe(true)
+                expect(comment.hasOwnProperty('created_at')).toBe(true)
+                expect(comment.hasOwnProperty('author')).toBe(true)
+                expect(comment.hasOwnProperty('body')).toBe(true)
+                expect(comment.hasOwnProperty('article_id')).toBe(true)
+            })
+            expect(commentsList.length).toBe(controlCommentsQuant)
+        });
+    })
+    test.only('tests comments list to see if its ASC', async () => {
+        const articalId = 1
+        await selectCommentsById(articalId)
+        .then((result) => {
+            const commentsList = result
+            const controlCommentsQuant = 2
+
+            for (let i = 1; i < commentsList.length; i++){
+                const firstPosCreatedAt = new Date(commentsList[i -1].created_at)
+                const secondPosCreatedAt = new Date(commentsList[i].created_at)
+                let isAsceding = false
+                
+                if (firstPosCreatedAt < secondPosCreatedAt){
+                    isAsceding = true
+                }
+
+                expect(isAsceding).toBe(true)
+            }
+
+        });
+    })
+})
+
 

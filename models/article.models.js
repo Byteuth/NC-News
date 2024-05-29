@@ -56,7 +56,25 @@ exports.selectArticles = () => {
                 comment_count: commentCount
             };
         }))
-        //console.log(articlesWithCommentCount)
         return articlesWithCommentCount
+    })
+}
+
+exports.selectCommentsById = (article_id) => {
+    
+    return db.query(
+        `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id
+        FROM comments
+        WHERE comments.article_id = $1
+        ORDER BY comments.created_at ASC;`,
+        [article_id]
+    )
+    .then((result) => {
+        if (result.rowCount === 0){
+            return reject404();
+            }
+        const commentsList = result.rows
+        return commentsList
+
     })
 }

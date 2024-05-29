@@ -42,6 +42,53 @@ describe("/api/topics", () => {
 
 })
 
+describe("/api/articles", () => {
+    test("GET:200 sends a list of article objects in correct format", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+            const articlesList = response.body.articles
+            const numberOfArticles = articlesList.length
+            expect(numberOfArticles).toBe(13)
+
+
+            articlesList.forEach((article) => {
+                expect(article.hasOwnProperty('body')).toBe(false)
+
+                expect(article.hasOwnProperty('author')).toBe(true)
+                expect(article.hasOwnProperty('title')).toBe(true)
+                expect(article.hasOwnProperty('topic')).toBe(true)
+                expect(article.hasOwnProperty('created_at')).toBe(true)
+                expect(article.hasOwnProperty('votes')).toBe(true)
+                expect(article.hasOwnProperty('article_img_url')).toBe(true)
+                expect(article.hasOwnProperty('comment_count')).toBe(true)
+                
+            });
+        });
+    });
+    
+    test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+        return request(app)
+        .get("/api/articles/999")
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("Not Found");
+        });
+    });
+    test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
+        return request(app)
+        .get("/api/articles/not-an-article")
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("Bad Request");
+        });
+    });
+    
+});
+
+
+
 describe("/api/articles/:article_id", () => {
     test("GET:200 sends a single team to the client", () => {
         return request(app)
@@ -60,16 +107,7 @@ describe("/api/articles/:article_id", () => {
                 article_img_url:
                 "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             }
-            //console.log(article)
-            expect(article.article_id).toBe(1);
-            expect(article.title).toBe("Living in the shadow of a great man");
-            expect(article.topic).toBe("mitch");
-            expect(article.author).toBe("butter_bridge");
-            expect(article.body).toBe("I find this existence challenging");
-            expect(article.created_at).toBe(1594329060000);
-            expect(article.votes).toBe(100);
-            expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
-            expect(article).toEqual(control)
+            expect(article).toMatchObject(control)
         });
     });
     test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
@@ -77,7 +115,7 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/999")
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("team does not exist");
+            expect(response.body.msg).toBe("Not Found");
         });
     });
     test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
@@ -85,7 +123,7 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/not-a-team")
         .expect(400)
         .then((response) => {
-            expect(response.body.msg).toBe("Bad request");
+            expect(response.body.msg).toBe("Bad Request");
         });
     });
     

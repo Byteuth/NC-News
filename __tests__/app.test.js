@@ -63,28 +63,26 @@ describe("/api/articles", () => {
                 expect(article.hasOwnProperty('votes')).toBe(true)
                 expect(article.hasOwnProperty('article_img_url')).toBe(true)
                 expect(article.hasOwnProperty('comment_count')).toBe(true)
-                
             });
+
+            
+            for (let i = 1; i < articlesList.length; i++){
+                const firstArticleCreatedAt = new Date(articlesList[i -1].created_at)
+                const secondArticleCreatedAt = new Date(articlesList[i].created_at)
+                let isDescending = false
+                
+                if (firstArticleCreatedAt >= secondArticleCreatedAt){
+                    isDescending = true
+
+                }
+
+                expect(isDescending).toBe(true)
+            } 
+
+            
         });
     });
-    
-    test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
-        return request(app)
-        .get("/api/articles/999")
-        .expect(404)
-        .then((response) => {
-            expect(response.body.msg).toBe("Not Found");
-        });
-    });
-    test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
-        return request(app)
-        .get("/api/articles/not-an-article")
-        .expect(400)
-        .then((response) => {
-            expect(response.body.msg).toBe("Bad Request");
-        });
-    });
-    
+
 });
 
 
@@ -129,7 +127,7 @@ describe("/api/articles/:article_id", () => {
 });
 
 describe("/api/articles/:article_id/comments", () => {
-    test.only("GET:200 returns list of comments based on article_id ", () => {
+    test("GET:200 returns list of comments based on article_id ", () => {
         return request(app)
         .get("/api/articles/1/comments")
         .expect(200)

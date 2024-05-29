@@ -88,7 +88,6 @@ describe("/api/articles", () => {
 });
 
 
-
 describe("/api/articles/:article_id", () => {
     test("GET:200 sends a single team to the client", () => {
         return request(app)
@@ -126,6 +125,45 @@ describe("/api/articles/:article_id", () => {
             expect(response.body.msg).toBe("Bad Request");
         });
     });
+    
+});
+
+describe("/api/articles/:article_id/comments", () => {
+    test.only("GET:200 returns list of comments based on article_id ", () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+            const article = response.body.article
+            const control = {
+                comment_id: 9,
+                votes: 0,
+                created_at: '2020-01-01T03:08:00.000Z',
+                author: 'icellusedkars',
+                body: 'Superficially charming',
+                article_id: 1
+            }
+            expect(article[0]).toEqual(control)
+            expect(article[0]).not.toBe(control)
+        });
+    });
+    test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+        return request(app)
+        .get("/api/articles/999/comments")
+        .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe("Not Found");
+        });
+    });
+    test("GET:400 sends an appropriate status and error message when given an invalid id", () => {
+        return request(app)
+        .get("/api/articles/not-a-team")
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe("Bad Request");
+        });
+    });
+    
     
 });
 

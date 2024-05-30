@@ -13,7 +13,8 @@ const {
   getArticles,
   getArticlesById,
   getCommentsByArticleId,
-  addCommentToArticleId
+  addCommentToArticleId,
+  patchArticleVotesByArticleId
 } = require ('./controllers/articles.controllers')
 
 app.use(express.json());
@@ -24,7 +25,11 @@ app.get('/api', getAPI)
 app.get('/api/topics', getTopics)
 
 app.get('/api/articles', getArticles)
+
 app.get('/api/articles/:article_id', getArticlesById)
+app.patch('/api/articles/:article_id', patchArticleVotesByArticleId)
+
+
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 app.post('/api/articles/:article_id/comments', addCommentToArticleId)
 

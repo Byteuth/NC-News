@@ -5,7 +5,8 @@ const data = require("../db/data/test-data/index");
 const {
     selectArticles,
     selectCommentsById,
-    insertComment
+    insertComment,
+    updateVotesValue
 } = require("../models/article.models")
 
 
@@ -82,6 +83,31 @@ describe("insertComment", () => {
         .then((result) => {
             expect(result.comment_id).toBe(20);
         })
+    })
+
+})
+
+describe("updateVotesValue", () => {
+    test('tests updateVotesValue votes property to see if votes property changes correctly with every patch - add/remove', async () => {
+        const articleId = 1
+        await updateVotesValue(articleId, 12)
+        .then((result) => {
+            expect(result).toBeObject()
+            expect(result.votes).toBe(112)
+        })
+
+        await updateVotesValue(articleId, 12)
+        .then((result) => {
+            expect(result).toBeObject()
+            expect(result.votes).toBe(124)
+        })
+
+        await updateVotesValue(articleId, -100)
+        .then((result) => {
+            expect(result).toBeObject()
+            expect(result.votes).toBe(24)
+        })
+
     })
 
 })

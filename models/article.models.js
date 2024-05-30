@@ -1,11 +1,18 @@
 const db = require("../db/connection")
 const { 
     reject404,
+    rejectInvalidQuery
 } = require("../error_handlers/utils.error._handler");
 
 const {
     convertDateTotimestamp,
 } = require("./utils.models")
+
+const {
+    findTopics
+} = require("./topics.models")
+
+
 
 
 exports.selectArticleById = (article_id) => {
@@ -26,21 +33,53 @@ exports.selectArticleById = (article_id) => {
     })
 }
 
-exports.selectArticles = () => {
-    return db.query(
-        `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
-        COUNT(comments.article_id) AS comment_count
-        FROM articles
-        LEFT JOIN comments
-        ON articles.article_id = comments.article_id
-        GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
-        ORDER BY articles.created_at DESC;`
-    )
-    .then((result)=>{
-        return result.rows
-    })
+exports.selectArticles = async (query) => {
+    const topics = await findTopics()
+    const topicExists = topics.some((topic) => topic.slug === query) 
+    const topicSlug = query
+
+    const queryWithTopicString = `
+    SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+    COUNT(comments.article_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id
+    WHERE articles.topic = ($1)
+    GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
+    ORDER BY articles.created_at DESC;` 
+
+    const queryAll = `
+    SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+    COUNT(comments.article_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments
+    ON articles.article_id = comments.article_id
+    GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
+    ORDER BY articles.created_at DESC;`
 
     
+    if (topicExists === true) {
+        return db.query(
+            queryWithTopicString,
+            [topicSlug]
+        )
+        .then((result) => {
+            return result.rows
+        })
+    }
+    else if (!query) {
+        return db.query(
+            queryAll
+        )
+        .then((result )=> {
+            return result.rows
+        })
+    }
+    else {
+        return rejectInvalidQuery()
+    }
+    
+
 }
 
 exports.selectCommentsById = (article_id) => { 
@@ -80,8 +119,6 @@ exports.insertComment = (articleId, comment) => {
 
 
 exports.updateVotesValue = (articleId, newVote) => {
-
-
     return db.query(
         `UPDATE articles
         SET votes = votes + $1

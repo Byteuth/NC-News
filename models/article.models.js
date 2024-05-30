@@ -1,6 +1,6 @@
 const db = require("../db/connection")
 const { 
-    reject404 
+    reject404,
 } = require("../error_handlers/utils.error._handler");
 
 const {
@@ -81,6 +81,7 @@ exports.insertComment = (articleId, comment) => {
 
 exports.updateVotesValue = (articleId, newVote) => {
 
+
     return db.query(
         `UPDATE articles
         SET votes = votes + $1
@@ -88,7 +89,7 @@ exports.updateVotesValue = (articleId, newVote) => {
         RETURNING *;`,
         [newVote, articleId]
     )
-    .then(result => {
+    .then(result => {       
         const updatedArticle = result.rows[0]
             if (!updatedArticle) {
                 return reject404()

@@ -96,6 +96,68 @@ describe("ENDPOINTS", () => {
             });
         
         });
+        describe("/api/articles?topic=mitch", () => {
+            test("GET:200 sends list of articles based on topic: mitch", () => {
+                return request(app)
+                .get("/api/articles?topic=mitch")
+                .expect(200)
+                .then((response) => {
+                    const articlesList = response.body.articles
+                    
+
+                    const control = {
+                        author: 'icellusedkars',
+                        title: 'Eight pug gifs that remind me of mitch',
+                        article_id: 3,
+                        topic: 'mitch',
+                        created_at: '2020-11-03T09:12:00.000Z',
+                        votes: 0,
+                        article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+                        comment_count: '2'
+                    }
+
+                    expect(articlesList.length).toBe(12)
+                    expect(articlesList[0]).toMatchObject(control)
+
+                    articlesList.forEach((article) =>{
+                        expect(article.topic).toBe('mitch')
+                    })
+                })
+            })
+        }) 
+        describe("/api/articles?topic=cats", () => {
+            test("GET:200 sends list of articles based on topic: cats", () => {
+                return request(app)
+                .get("/api/articles?topic=cats")
+                .expect(200)
+                .then((response) => {
+                    const articlesList = response.body.articles
+                        expect(articlesList.length).toBe(1)
+                });
+            })
+        })
+        describe("/api/articles?topic=", () => {
+            test("GET:200 sends list of ALL articles if no topic passed", () => {
+                return request(app)
+                .get("/api/articles?topic=")
+                .expect(200)
+                .then((response) => {
+                    const articlesList = response.body.articles
+                    expect(articlesList.length).toBe(13)
+                });            
+            })
+        })
+        describe("/api/articles?topic=not-a-real-topic", () => {
+            test("GET:400 sends list of ALL articles if no topic passed", () => {
+                return request(app)
+                .get("/api/articles?topic=not-a-real-topic")
+                .expect(404)
+                .then((response) => {
+                    const error = response.body
+                    expect(error.msg).toBe("Invalid Query")
+                });
+            })
+        })
         describe("/api/articles/:article_id", () => {
             test("GET:200 sends a single team to the client", () => {
                 return request(app)
@@ -380,8 +442,9 @@ describe("ENDPOINTS", () => {
         })
 
     })
-
 })
+
+
 
 describe("UTIL_TESTS", () => {
 

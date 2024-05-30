@@ -12,9 +12,11 @@ exports.rejectInvalidCommentId = () => {
     });
 }
 
-exports.noContent204 = () => {
+exports.rejectInvalidQuery = () => {
     return Promise.reject({
-        status: 204,
-        msg: 's',
+        status: 404,
+        msg: 'Invalid Query',
     });
 }
+
+

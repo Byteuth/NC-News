@@ -43,7 +43,7 @@ exports.addCommentToArticleId = (req, res, next) => {
     const comment = req.body
     insertComment(articleId, comment)
     .then((postedComment) => {
-        res.status(200).send({postedComment: postedComment});
+        res.status(201).send({postedComment: postedComment});
     })
     .catch(next)
 }
@@ -53,7 +53,7 @@ exports.patchArticleVotesByArticleId = (req, res, next) => {
     const newVote = req.body.inc_votes
     updateVotesValue(articleId, newVote)
     .then((updatedArticle) => {
-        res.status(200).send({updatedArticle: updatedArticle});
+        res.status(202).send({updatedArticle: updatedArticle});
     })
     .catch(next)
 }

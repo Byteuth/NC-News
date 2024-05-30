@@ -9,7 +9,9 @@ const {
 
 
 exports.getArticles = (req, res, next) => {
-    selectArticles()
+
+    const query = req.query.topic
+    selectArticles(query)
     .then((articles) => {
         res.status(200).send({articles: articles})
     })
@@ -24,6 +26,14 @@ exports.getArticlesById = (req, res, next) => {
         res.status(200).send({article: article});
     })
     .catch(next)
+}
+
+exports.getArticlesByQuery = async (req, res, next) => {
+    getArticles()
+    .then((articles) => {
+        res.status(200).send({articles: articles});
+    })
+
 }
 
 
@@ -57,4 +67,5 @@ exports.patchArticleVotesByArticleId = (req, res, next) => {
     })
     .catch(next)
 }
+
 

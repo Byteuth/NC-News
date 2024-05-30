@@ -76,5 +76,23 @@ exports.insertComment = (articleId, comment) => {
             }
             return insertedComment
     })
+}
 
+
+exports.updateVotesValue = (articleId, newVote) => {
+
+    return db.query(
+        `UPDATE articles
+        SET votes = votes + $1
+        WHERE article_id = $2
+        RETURNING *;`,
+        [newVote, articleId]
+    )
+    .then(result => {
+        const updatedArticle = result.rows[0]
+            if (!updatedArticle) {
+                return reject404()
+            }
+            return updatedArticle
+    })
 }

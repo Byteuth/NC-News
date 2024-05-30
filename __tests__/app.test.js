@@ -123,7 +123,44 @@ describe("/api/articles/:article_id", () => {
             expect(response.body.msg).toBe("Bad Request");
         });
     });
-    
+
+
+    test("PATCH:200 returns udated article with correct properties ", () => {
+        const newVote = 12
+        const inputVote = { inc_votes: newVote }
+        const control = {
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 112,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+        }
+        
+        return request(app)
+        .patch("/api/articles/1")
+        .send(inputVote)
+        .expect(200)
+        .then((response ) => {
+            const updatedArticle = response.body.updatedArticle
+            expect(updatedArticle).toMatchObject(control)
+        });
+    });
+
+    test("PATCH:404 sends an appropriate status and error message when given an invalid article_id ", () => {
+        const inputVote = { inc_votes: 12 }        
+        return request(app)
+        .patch("/api/articles/999")
+        .send(inputVote)
+        .expect(404)
+        .then((response ) => {
+            
+            expect(response.body.msg).toBe("Not Found");
+        });
+    });
+
 });
 
 describe("/api/articles/:article_id/comments", () => {
@@ -200,6 +237,7 @@ describe("/api/articles/:article_id/comments", () => {
             expect(response.body.msg).toBe('Invalid Username')
         });
     });
+
     
     
 });

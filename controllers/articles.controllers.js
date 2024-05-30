@@ -2,7 +2,8 @@ const {
     selectArticles,
     selectArticleById,
     selectCommentsById,
-    insertComment
+    insertComment,
+    updateVotesValue
 } = require('../models/article.models')
 
 
@@ -38,11 +39,22 @@ exports.getCommentsByArticleId = (req, res, next) => {
 
 
 exports.addCommentToArticleId = (req, res, next) => {
-    const comment = req.body
     const articleId = req.params.article_id
+    const comment = req.body
     insertComment(articleId, comment)
     .then((postedComment) => {
         res.status(200).send({postedComment: postedComment});
     })
     .catch(next)
 }
+
+exports.patchArticleVotesByArticleId = (req, res, next) => {
+    const articleId = req.params.article_id
+    const newVote = req.body.inc_votes
+    updateVotesValue(articleId, newVote)
+    .then((updatedArticle) => {
+        res.status(200).send({updatedArticle: updatedArticle});
+    })
+    .catch(next)
+}
+

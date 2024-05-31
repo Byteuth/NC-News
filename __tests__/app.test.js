@@ -1,4 +1,5 @@
 const app = require("../app");
+const jestSorted = require('jest-sorted')
 const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
@@ -7,7 +8,7 @@ const endpoints = require('../endpoints.json')
 
 const {
     selectArticles,
-    selectCommentsById,
+    selectCommentsByArticleId,
     insertComment,
     updateVotesValue
 } = require("../models/article.models")
@@ -19,7 +20,7 @@ afterAll(() => db.end());
 
 
 describe("ENDPOINTS", () => {
-    describe("PATH: /API", () => {
+    describe("PATH: API", () => {
         describe("/api/", () => {
             test("GET:200 - returns object describing all the avaiable endpoints", () => {
                 
@@ -35,7 +36,7 @@ describe("ENDPOINTS", () => {
             });
         });
     })
-    describe("PATH: /API/TOPICS", () => {
+    describe("PATH: API/TOPICS", () => {
         describe("/api/topics", () => {
             test("GET:200 - sends an array of topic objects to the client", () => {
                 return request(app)
@@ -53,7 +54,7 @@ describe("ENDPOINTS", () => {
             });
         })
     })
-    describe("PATH: /API/ARTICLES", () => {
+    describe("PATH: API/ARTICLES", () => {
         describe("/api/articles", () => {
             test("GET:200 sends a list of article objects in correct format", () => {
                 return request(app)
@@ -77,19 +78,8 @@ describe("ENDPOINTS", () => {
                         expect(article.hasOwnProperty('comment_count')).toBe(true)
                     });
         
+                        expect(articlesList).toBeSortedBy('created_at', { descending: true });
                     
-                    for (let i = 1; i < articlesList.length; i++){
-                        const firstArticleCreatedAt = new Date(articlesList[i -1].created_at)
-                        const secondArticleCreatedAt = new Date(articlesList[i].created_at)
-                        let isDescending = false
-                        
-                        if (firstArticleCreatedAt >= secondArticleCreatedAt){
-                            isDescending = true
-        
-                        }
-        
-                        expect(isDescending).toBe(true)
-                    } 
         
                     
                 });
@@ -103,7 +93,6 @@ describe("ENDPOINTS", () => {
                 .expect(200)
                 .then((response) => {
                     const articlesList = response.body.articles
-                    
 
                     const control = {
                         author: 'icellusedkars',
@@ -136,6 +125,24 @@ describe("ENDPOINTS", () => {
                 });
             })
         })
+
+        describe("/api/articles?topic=paper]", () => {
+            test.only("GET:200 sends an empty array when queried data's result is empty", () => {
+                return request(app)
+                .get("/api/articles?topic=paper")
+                .expect(200)
+                .then((response) => {
+                    const article = response.body
+                    expect(article).toEqual({articles: []})
+                });
+            })
+        })
+
+
+
+
+
+
         describe("/api/articles?topic=", () => {
             test("GET:200 sends list of ALL articles if no topic passed", () => {
                 return request(app)
@@ -148,7 +155,7 @@ describe("ENDPOINTS", () => {
             })
         })
         describe("/api/articles?topic=not-a-real-topic", () => {
-            test("GET:400 sends list of ALL articles if no topic passed", () => {
+            test("GET:400 sends an appropriate status and error message when given an query value", () => {
                 return request(app)
                 .get("/api/articles?topic=not-a-real-topic")
                 .expect(404)
@@ -159,7 +166,7 @@ describe("ENDPOINTS", () => {
             })
         })
         describe("/api/articles/:article_id", () => {
-            test("GET:200 sends a single team to the client", () => {
+            test("GET:200 sends a single article filered by article_id. Includes comment_count", () => {
                 return request(app)
                 .get("/api/articles/1")
                 .expect(200)
@@ -176,6 +183,7 @@ describe("ENDPOINTS", () => {
                         article_img_url:
                         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                     }
+                    expect(article.comment_count).toBe(11)
                     expect(article).toMatchObject(control)
                 });
             });
@@ -446,8 +454,7 @@ describe("ENDPOINTS", () => {
 
 
 
-describe("UTIL_TESTS", () => {
-
+describe("ARTICLES_UTIL_TESTS", () => {
     describe("selectArticles", () => {
         test("tests selectArticles articles and articles.comment_count is of correct value", async() => {
             const articles = await selectArticles()
@@ -464,10 +471,10 @@ describe("UTIL_TESTS", () => {
             expect(articles[0].comment_count).toBe("2")
         });
     })
-    describe("selectCommentsById", () => {
-        test('tests selectCommentsById length and properties ', async () => {
+    describe("selectCommentsByArticleId", () => {
+        test('tests selectCommentsByArticleId length and properties ', async () => {
             const articalId = 1
-            await selectCommentsById(articalId)
+            await selectCommentsByArticleId(articalId)
             .then((result) => {
                 const commentsList = result
                 const controlCommentsQuant = 11
@@ -539,5 +546,10 @@ describe("UTIL_TESTS", () => {
         })
 
     })
+    describe("addCommentCountToArticles", () => {
+        test('tests updateVotesValue votes property to see if votes property changes correctly with every patch - add/remove', async () => {
 
+        })
+
+    }) 
 })

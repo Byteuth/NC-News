@@ -1,7 +1,7 @@
 const {
     selectArticles,
     selectArticleById,
-    selectCommentsById,
+    selectCommentsByArticleId,
     insertComment,
     updateVotesValue
 } = require('../models/article.models')
@@ -21,9 +21,16 @@ exports.getArticles = (req, res, next) => {
 exports.getArticlesById = (req, res, next) => {
     const body = req.params
     const articleId = body.article_id  
-    selectArticleById(articleId)
-    .then((article) => {
+
+    const articleListPromise = selectArticleById(articleId)
+    const commentsListPromise = selectCommentsByArticleId(articleId)
+
+
+    Promise.all([articleListPromise, commentsListPromise])
+    .then(([article, comments])=>{
+        article.comment_count = comments.length
         res.status(200).send({article: article});
+        return article
     })
     .catch(next)
 }
@@ -40,10 +47,11 @@ exports.getArticlesByQuery = async (req, res, next) => {
 exports.getCommentsByArticleId = (req, res, next) => {
     const body = req.params
     const articleId = body.article_id   
-    selectCommentsById(articleId)
+    selectCommentsByArticleId(articleId)
     .then((comments) => {
+       // console.log(comments)
         res.status(200).send({article: comments});
-    })
+    }) 
     .catch(next)
 }
 

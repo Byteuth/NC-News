@@ -15,12 +15,15 @@ const {
 
 
 
-exports.selectArticleById = (article_id) => {
+
+
+
+exports.selectArticleById = (articleId) => {
     return db.query(
         `SELECT *
         FROM articles
         WHERE article_id = $1;`, 
-        [article_id]
+        [articleId]
     )
     .then((result) => {
         if (result.rowCount === 0){
@@ -31,6 +34,7 @@ exports.selectArticleById = (article_id) => {
         const article = convertDateTotimestamp(resultArtical)
         return article
     })
+
 }
 
 exports.selectArticles = async (query) => {
@@ -63,8 +67,11 @@ exports.selectArticles = async (query) => {
             queryWithTopicString,
             [topicSlug]
         )
-        .then((result) => {
-            return result.rows
+        .then((result )=> {
+            const articles = result.rows
+            if (articles.length === 0) return []
+            console.log(articles.length)
+            return articles
         })
     }
     else if (!query) {
@@ -72,6 +79,7 @@ exports.selectArticles = async (query) => {
             queryAll
         )
         .then((result )=> {
+            // console.log(result.rows)
             return result.rows
         })
     }
@@ -82,19 +90,21 @@ exports.selectArticles = async (query) => {
 
 }
 
-exports.selectCommentsById = (article_id) => { 
+exports.selectCommentsByArticleId = (articleId) => { 
     return db.query(
         `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id
         FROM comments
         WHERE comments.article_id = $1
         ORDER BY comments.created_at ASC;`,
-        [article_id]
+        [articleId]
     )
     .then((result) => {
         if (result.rowCount === 0){
             return reject404();
             }
         const commentsList = result.rows
+        // commentsList.comment_count = commentsList.length
+        // //console.log(commentsList)
         return commentsList
 
     })
@@ -134,3 +144,4 @@ exports.updateVotesValue = (articleId, newVote) => {
             return updatedArticle
     })
 }
+

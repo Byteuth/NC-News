@@ -1,4 +1,4 @@
-exports.errorHandler = (err, req, res, next) => {
+exports.resolvePSQLerrors = (err, req, res, next) => {
     //console.log('error msg: ',err)
 
     
@@ -17,4 +17,25 @@ exports.errorHandler = (err, req, res, next) => {
     else {
         res.status(500).send({ msg: "Internal Server Error" });
     }
+}
+
+exports.reject404 = () => {
+    return Promise.reject({
+        status: 404,
+        msg: 'Bad Request',
+    });
+}
+
+exports.rejectInvalidCommentId = () => {
+    return Promise.reject({
+        status: 404,
+        msg: 'Bad Comment Id',
+    });
+}
+
+exports.rejectInvalidQuery = () => {
+    return Promise.reject({
+        status: 404,
+        msg: 'Invalid Query',
+    });
 }

@@ -9,7 +9,6 @@ const {
 
 
 exports.getArticles = (req, res, next) => {
-
     const query = req.query.topic
     selectArticles(query)
     .then((articles) => {
@@ -21,11 +20,8 @@ exports.getArticles = (req, res, next) => {
 exports.getArticlesById = (req, res, next) => {
     const body = req.params
     const articleId = body.article_id  
-
     const articleListPromise = selectArticleById(articleId)
     const commentsListPromise = selectCommentsByArticleId(articleId)
-
-
     Promise.all([articleListPromise, commentsListPromise])
     .then(([article, comments])=>{
         article.comment_count = comments.length
@@ -40,7 +36,6 @@ exports.getArticlesByQuery = async (req, res, next) => {
     .then((articles) => {
         res.status(200).send({articles: articles});
     })
-
 }
 
 
@@ -49,7 +44,6 @@ exports.getCommentsByArticleId = (req, res, next) => {
     const articleId = body.article_id   
     selectCommentsByArticleId(articleId)
     .then((comments) => {
-       // console.log(comments)
         res.status(200).send({article: comments});
     }) 
     .catch(next)

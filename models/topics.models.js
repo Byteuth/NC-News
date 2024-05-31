@@ -1,7 +1,7 @@
 const db = require("../db/connection")
 const { 
     reject404 
-} = require("../error_handlers/utils.error._handler");
+} = require("../error_handlers/error_handlers");
 
 exports.findTopics = () => {
     return db.query(

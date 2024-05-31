@@ -115,7 +115,7 @@ describe("ENDPOINTS", () => {
                 });
             })
         })
-        describe("/api/articles?topic=paper]", () => {
+        describe("/api/articles?topic=paper", () => {
             test("GET:200 sends an empty array when queried data's result is empty", () => {
                 return request(app)
                 .get("/api/articles?topic=paper")

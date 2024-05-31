@@ -40,6 +40,7 @@ app.get('/api/articles/:article_id', getArticlesById)
 app.patch('/api/articles/:article_id', patchArticleVotesByArticleId)
 
 
+
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 app.post('/api/articles/:article_id/comments', addCommentToArticleId)
 

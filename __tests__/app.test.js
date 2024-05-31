@@ -45,11 +45,11 @@ describe("ENDPOINTS", () => {
                 .then(( {body} ) => {
                 const topics = body.topics;
             
-                expect(topics.length).toBe(3); 
-                topics.forEach((topic) => {  
-                    expect(topic.hasOwnProperty('slug')).toBe(true);
-                    expect(topic.hasOwnProperty('description')).toBe(true);
-                });
+                    expect(topics.length).toBe(3); 
+                    topics.forEach((topic) => {  
+                        expect(topic.hasOwnProperty('slug')).toBe(true);
+                        expect(topic.hasOwnProperty('description')).toBe(true);
+                    });
                 });
             });
         })
@@ -64,11 +64,8 @@ describe("ENDPOINTS", () => {
                     const articlesList = response.body.articles
                     const numberOfArticles = articlesList.length
                     expect(numberOfArticles).toBe(13)
-        
-        
                     articlesList.forEach((article) => {
                         expect(article.hasOwnProperty('body')).toBe(false)
-        
                         expect(article.hasOwnProperty('author')).toBe(true)
                         expect(article.hasOwnProperty('title')).toBe(true)
                         expect(article.hasOwnProperty('topic')).toBe(true)
@@ -77,11 +74,7 @@ describe("ENDPOINTS", () => {
                         expect(article.hasOwnProperty('article_img_url')).toBe(true)
                         expect(article.hasOwnProperty('comment_count')).toBe(true)
                     });
-        
                         expect(articlesList).toBeSortedBy('created_at', { descending: true });
-                    
-        
-                    
                 });
             });
         
@@ -93,7 +86,6 @@ describe("ENDPOINTS", () => {
                 .expect(200)
                 .then((response) => {
                     const articlesList = response.body.articles
-
                     const control = {
                         author: 'icellusedkars',
                         title: 'Eight pug gifs that remind me of mitch',
@@ -104,10 +96,8 @@ describe("ENDPOINTS", () => {
                         article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
                         comment_count: '2'
                     }
-
                     expect(articlesList.length).toBe(12)
                     expect(articlesList[0]).toMatchObject(control)
-
                     articlesList.forEach((article) =>{
                         expect(article.topic).toBe('mitch')
                     })
@@ -125,9 +115,8 @@ describe("ENDPOINTS", () => {
                 });
             })
         })
-
         describe("/api/articles?topic=paper]", () => {
-            test.only("GET:200 sends an empty array when queried data's result is empty", () => {
+            test("GET:200 sends an empty array when queried data's result is empty", () => {
                 return request(app)
                 .get("/api/articles?topic=paper")
                 .expect(200)
@@ -137,12 +126,6 @@ describe("ENDPOINTS", () => {
                 });
             })
         })
-
-
-
-
-
-
         describe("/api/articles?topic=", () => {
             test("GET:200 sends list of ALL articles if no topic passed", () => {
                 return request(app)
@@ -280,7 +263,6 @@ describe("ENDPOINTS", () => {
                 });
             });
             
-        
         });
         describe("/api/articles/:article_id/comments", () => {
             test("GET:200 returns list of comments based on article_id ", () => {
@@ -322,22 +304,18 @@ describe("ENDPOINTS", () => {
                     username: "icellusedkars",
                     body: 'This is a great aritcle name'
                     }
-        
                 return request(app)
                 .post("/api/articles/1/comments")
                 .send(controlComment)
                 .expect(201)
                 .then((response ) => {
                     const comment = response.body.postedComment
-        
                     expect(comment.body).toBe(controlComment.body)
                     expect(comment.author).toBe(controlComment.username)
-        
                     expect(comment.hasOwnProperty('comment_id')).toBe(true)
                     expect(comment.hasOwnProperty('article_id')).toBe(true)
                     expect(comment.hasOwnProperty('votes')).toBe(true)
                     expect(comment.hasOwnProperty('created_at')).toBe(true)
-        
                 });
             });
             test("POST:400 sends an appropriate status and error message when given a valid id but incorrect username", () => {
@@ -345,7 +323,6 @@ describe("ENDPOINTS", () => {
                     username: "francisco",
                     body: 'This is a great aritcle name'
                     }
-        
                 return request(app)
                 .post("/api/articles/1/comments")
                 .send(controlComment)
@@ -378,7 +355,6 @@ describe("ENDPOINTS", () => {
                     expect(comment.hasOwnProperty('article_id')).toBe(true)
                     expect(comment.hasOwnProperty('votes')).toBe(true)
                     expect(comment.hasOwnProperty('created_at')).toBe(true)
-        
                 });
             });
             test("POST:400 sends an appropriate status and error message when given a valid but non-existent id", () => {
@@ -386,7 +362,6 @@ describe("ENDPOINTS", () => {
                     username: "francisco",
                     body: 'This is a great aritcle name'
                     }
-        
                 return request(app)
                 .post("/api/articles/1/comments")
                 .send(controlComment)
@@ -400,8 +375,6 @@ describe("ENDPOINTS", () => {
                 .delete("/api/comments/2")
                 .expect(204)
             });
-    
-    
             test("DELETE:204 returns deleted comment", () => {
                 return request(app)
                 .delete("/api/comments/999")
@@ -409,17 +382,14 @@ describe("ENDPOINTS", () => {
                 .then((response) => {
                     const deletedComment = response.body.msg
                     expect(deletedComment).toBe('Bad Comment Id')
-        
                 });
             });
-    
             test("DELETE:404 sends an appropriate status and error message when given an invalid comment_id", () => {
                 return request(app)
                 .delete("/api/comments/999")
                 .expect(404)
                 .then((response) => {
                     const errorResponse = response.body.msg
-        
                     expect(errorResponse).toEqual('Bad Comment Id');
                 });
             });
@@ -448,17 +418,14 @@ describe("ENDPOINTS", () => {
                 .expect(404)
             });
         })
-
     })
 })
-
 
 
 describe("ARTICLES_UTIL_TESTS", () => {
     describe("selectArticles", () => {
         test("tests selectArticles articles and articles.comment_count is of correct value", async() => {
             const articles = await selectArticles()
-
             expect(articles[0]).toBeObject();
             expect(articles[0].hasOwnProperty('author')).toBe(true)
             expect(articles[0].hasOwnProperty('title')).toBe(true)
@@ -491,7 +458,6 @@ describe("ARTICLES_UTIL_TESTS", () => {
                 expect(commentsList.length).toBe(controlCommentsQuant)
             });
         })
-
     })
     describe("insertComment", () => {
         test('tests selectCommentsById for correct properties, tests to see if comments db increase with each post ', async () => {
@@ -505,7 +471,6 @@ describe("ARTICLES_UTIL_TESTS", () => {
             await insertComment(articleId, comment)
             .then((result) => {
                 expect(result).toBeObject()
-
                 expect(result.comment_id).toBe(19)
                 expect(result.hasOwnProperty('comment_id')).toBe(true)
                 expect(result.hasOwnProperty('votes')).toBe(true)
@@ -514,13 +479,11 @@ describe("ARTICLES_UTIL_TESTS", () => {
                 expect(result.hasOwnProperty('body')).toBe(true)
                 expect(result.hasOwnProperty('created_at')).toBe(true)
             })
-
             await insertComment(articleId, comment)
             .then((result) => {
                 expect(result.comment_id).toBe(20);
             })
         })
-
     })
     describe("updateVotesValue", () => {
         test('tests updateVotesValue votes property to see if votes property changes correctly with every patch - add/remove', async () => {
@@ -530,26 +493,16 @@ describe("ARTICLES_UTIL_TESTS", () => {
                 expect(result).toBeObject()
                 expect(result.votes).toBe(112)
             })
-
             await updateVotesValue(articleId, 12)
             .then((result) => {
                 expect(result).toBeObject()
                 expect(result.votes).toBe(124)
             })
-
             await updateVotesValue(articleId, -100)
             .then((result) => {
                 expect(result).toBeObject()
                 expect(result.votes).toBe(24)
             })
-
         })
-
     })
-    describe("addCommentCountToArticles", () => {
-        test('tests updateVotesValue votes property to see if votes property changes correctly with every patch - add/remove', async () => {
-
-        })
-
-    }) 
 })

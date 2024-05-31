@@ -2,7 +2,7 @@ const db = require("../db/connection")
 const { 
     reject404,
     rejectInvalidQuery
-} = require("../error_handlers/utils.error._handler");
+} = require("../error_handlers/error_handlers");
 
 const {
     convertDateTotimestamp,
@@ -11,10 +11,6 @@ const {
 const {
     findTopics
 } = require("./topics.models")
-
-
-
-
 
 
 
@@ -41,7 +37,6 @@ exports.selectArticles = async (query) => {
     const topics = await findTopics()
     const topicExists = topics.some((topic) => topic.slug === query) 
     const topicSlug = query
-
     const queryWithTopicString = `
     SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
     COUNT(comments.article_id) AS comment_count
@@ -51,7 +46,6 @@ exports.selectArticles = async (query) => {
     WHERE articles.topic = ($1)
     GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
     ORDER BY articles.created_at DESC;` 
-
     const queryAll = `
     SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
     COUNT(comments.article_id) AS comment_count
@@ -70,7 +64,6 @@ exports.selectArticles = async (query) => {
         .then((result )=> {
             const articles = result.rows
             if (articles.length === 0) return []
-            console.log(articles.length)
             return articles
         })
     }
@@ -79,7 +72,6 @@ exports.selectArticles = async (query) => {
             queryAll
         )
         .then((result )=> {
-            // console.log(result.rows)
             return result.rows
         })
     }
@@ -103,17 +95,13 @@ exports.selectCommentsByArticleId = (articleId) => {
             return reject404();
             }
         const commentsList = result.rows
-        // commentsList.comment_count = commentsList.length
-        // //console.log(commentsList)
         return commentsList
-
     })
 }
 
 exports.insertComment = (articleId, comment) => {
     const commentMsg = comment.body
     const username = comment.username
-
     return db.query(
         `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *;`,
         [commentMsg, username, articleId]

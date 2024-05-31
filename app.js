@@ -1,7 +1,7 @@
 const express = require('express') 
 const app = express()
 
-const {errorHandler} = require('./error_handlers/api_error_handlers')
+const {resolvePSQLerrors} = require('./error_handlers/error_handlers')
 
 const {
   getAPI
@@ -23,6 +23,9 @@ const {
 const {
   getUsers
 } = require('./controllers/users.controllers')
+
+
+
 
 app.use(express.json());
 
@@ -51,7 +54,7 @@ app.delete('/api/comments/:comment_id', deleteCommentById)
 
 
 
-app.use(errorHandler);
+app.use(resolvePSQLerrors);
 
 
 

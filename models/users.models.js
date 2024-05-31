@@ -2,7 +2,7 @@ const db = require("../db/connection")
 const { 
     reject404,
     rejectInvalidCommentId,
-} = require("../error_handlers/utils.error._handler");
+} = require("../error_handlers/error_handlers");
 
 exports.findUsers = () => {
     

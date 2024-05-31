@@ -125,6 +125,24 @@ describe("ENDPOINTS", () => {
                 });
             })
         })
+
+        describe("/api/articles?topic=paper]", () => {
+            test.only("GET:200 sends an empty array when queried data's result is empty", () => {
+                return request(app)
+                .get("/api/articles?topic=paper")
+                .expect(200)
+                .then((response) => {
+                    const article = response.body
+                    expect(article).toEqual({articles: []})
+                });
+            })
+        })
+
+
+
+
+
+
         describe("/api/articles?topic=", () => {
             test("GET:200 sends list of ALL articles if no topic passed", () => {
                 return request(app)
@@ -137,7 +155,7 @@ describe("ENDPOINTS", () => {
             })
         })
         describe("/api/articles?topic=not-a-real-topic", () => {
-            test("GET:400 sends list of ALL articles if no topic passed", () => {
+            test("GET:400 sends an appropriate status and error message when given an query value", () => {
                 return request(app)
                 .get("/api/articles?topic=not-a-real-topic")
                 .expect(404)

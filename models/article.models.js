@@ -68,7 +68,10 @@ exports.selectArticles = async (query) => {
             [topicSlug]
         )
         .then((result )=> {
-            return result.rows
+            const articles = result.rows
+            if (articles.length === 0) return []
+            console.log(articles.length)
+            return articles
         })
     }
     else if (!query) {
@@ -76,6 +79,7 @@ exports.selectArticles = async (query) => {
             queryAll
         )
         .then((result )=> {
+            // console.log(result.rows)
             return result.rows
         })
     }

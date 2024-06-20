@@ -34,41 +34,67 @@ exports.selectArticleById = (articleId) => {
 }
 
 exports.selectArticles = async (query) => {
-    const topics = await findTopics()
-    const topicExists = topics.some((topic) => topic.slug === query) 
-    const topicSlug = query
-    const queryWithTopicString = `
-    SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
-    COUNT(comments.article_id) AS comment_count
-    FROM articles
-    LEFT JOIN comments
-    ON articles.article_id = comments.article_id
-    WHERE articles.topic = ($1)
-    GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
-    ORDER BY articles.created_at DESC;` 
-    const queryAll = `
-    SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
-    COUNT(comments.article_id) AS comment_count
-    FROM articles
-    LEFT JOIN comments
-    ON articles.article_id = comments.article_id
-    GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
-    ORDER BY articles.created_at DESC;`
+    try {
+        const topics = await findTopics();
+        let topicSlug = undefined;
+        if (query && query.topic) {
+            topicSlug = query.topic;
+            console.log(topicSlug); 
+        }
+        const topicExists = topicSlug ? topics.some((topic) => topic.slug === topicSlug) : false;
 
-    
-    if (topicExists) {
-        return db.query(queryWithTopicString, [query])
-            .then((result) => result.rows);
-    } else if (!query) {
-        return db.query(queryAll)
-            .then((result) => result.rows)
-    }
-    else {
-        return rejectInvalidQuery()
-    }
-    
+        const queryWithTopicString = `
+            SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+            COUNT(comments.article_id) AS comment_count
+            FROM articles
+            LEFT JOIN comments
+            ON articles.article_id = comments.article_id
+            WHERE articles.topic = ($1)
+            GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
+            ORDER BY articles.created_at DESC;
+        `;
 
-}
+        const queryAll = `
+            SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+            COUNT(comments.article_id) AS comment_count
+            FROM articles
+            LEFT JOIN comments
+            ON articles.article_id = comments.article_id
+            GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
+            ORDER BY articles.created_at DESC;
+        `;
+
+        if (topicSlug) { 
+            if (topicExists) {
+                return db.query(queryWithTopicString, [topicSlug])
+                    .then((result) => {
+                        const articles = result.rows;
+                        if (articles.length === 0) return [];
+                        // console.log(articles)
+                        return articles;
+                    })
+                    .catch((err) => {
+                        throw err;
+                    });
+            } else {
+                throw { status: 404, msg: 'Invalid Query' }; 
+            }
+        } else { 
+            return db.query(queryAll)
+                .then((result) => {
+                    // console.log(result.rows)
+                    return result.rows;
+
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        }
+    } catch (err) {
+        throw err;
+    }
+};
+
 
 exports.selectCommentsByArticleId = (articleId) => { 
     return db.query(

@@ -426,6 +426,7 @@ describe("ARTICLES_UTIL_TESTS", () => {
     describe("selectArticles", () => {
         test("tests selectArticles articles and articles.comment_count is of correct value", async() => {
             const articles = await selectArticles()
+            
             expect(articles[0]).toBeObject();
             expect(articles[0].hasOwnProperty('author')).toBe(true)
             expect(articles[0].hasOwnProperty('title')).toBe(true)

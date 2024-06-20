@@ -56,24 +56,12 @@ exports.selectArticles = async (query) => {
     ORDER BY articles.created_at DESC;`
 
     
-    if (topicExists === true) {
-        return db.query(
-            queryWithTopicString,
-            [topicSlug]
-        )
-        .then((result )=> {
-            const articles = result.rows
-            if (articles.length === 0) return []
-            return articles
-        })
-    }
-    else if (!query) {
-        return db.query(
-            queryAll
-        )
-        .then((result )=> {
-            return result.rows
-        })
+    if (topicExists) {
+        return db.query(queryWithTopicString, [query])
+            .then((result) => result.rows);
+    } else if (!query) {
+        return db.query(queryAll)
+            .then((result) => result.rows)
     }
     else {
         return rejectInvalidQuery()

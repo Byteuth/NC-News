@@ -9,10 +9,10 @@ const {
 
 
 exports.getArticles = (req, res, next) => {
-    const query = req.query.topic
-    selectArticles(query)
+    const {topic} = req.query.topic
+    selectArticles(topic)
     .then((articles) => {
-        res.status(200).send({articles: articles})
+        res.status(200).send({articles})
     })
     .catch(next)
 }
@@ -63,6 +63,7 @@ exports.addCommentToArticleId = (req, res, next) => {
 exports.patchArticleVotesByArticleId = (req, res, next) => {
     const articleId = req.params.article_id
     const newVote = req.body.inc_votes
+    console.log(newVote)
     updateVotesValue(articleId, newVote)
     .then((updatedArticle) => {
         res.status(202).send({updatedArticle: updatedArticle});
